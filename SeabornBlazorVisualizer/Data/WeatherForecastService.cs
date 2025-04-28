@@ -14,6 +14,7 @@ namespace SeabornBlazorVisualizer.Data
             Environment.SetEnvironmentVariable("PYTHONHOME", @"C:\programdata\anaconda3", EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONPATH", @"c:\programdata\anaconda3\lib\site-packages", EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pythonDll);
+
             PythonEngine.Initialize();
         }
 
@@ -61,13 +62,30 @@ namespace SeabornBlazorVisualizer.Data
           
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                // Import seaborn and matplotlib
-                // Import Seaborn
+
                 dynamic sys = Py.Import("sys");
+                sys.path.append(@"C:\ProgramData\Anaconda3\Lib\site-packages");
+                Console.WriteLine(sys.path);
+
+                Py.Import("numpy");
+                //Py.Import("matplotlib");
+               // Py.Import("seaborn");
+               
+
                 sys.path.append(@"Data/");
                 dynamic script = Py.Import(@"hello");
 
                 result = script.InvokeMethod("get_hello_world");
+
+
+
+                // Import seaborn and matplotlib
+                // Import Seaborn
+                //dynamic sys = Py.Import("sys");
+                //sys.path.append(@"Data/");
+                //dynamic script = Py.Import(@"hello");
+
+                //result = script.InvokeMethod("get_hello_world");
 
 
                 //dynamic sns = Py.Import("numpy");
@@ -87,6 +105,7 @@ namespace SeabornBlazorVisualizer.Data
 
             }
 
+            //PythonEngine.Shutdown();
 
             return Task.FromResult(result);
         }
