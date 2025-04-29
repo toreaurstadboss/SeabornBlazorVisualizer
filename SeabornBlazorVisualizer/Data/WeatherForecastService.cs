@@ -23,6 +23,7 @@ namespace SeabornBlazorVisualizer.Data
             Environment.SetEnvironmentVariable("PYTHONNET_PYVER", "3.10");
 
             PythonEngine.Initialize();
+            PythonEngine.BeginAllowThreads();
         }
 
 
