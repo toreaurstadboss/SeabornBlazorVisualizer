@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 using Python.Runtime;
+using System.Drawing;
 using static IronPython.Modules._ast;
 
 namespace SeabornBlazorVisualizer.Data
@@ -12,6 +13,8 @@ namespace SeabornBlazorVisualizer.Data
 
         private IOptions<PythonConfig>? _pythonConfig;
 
+        private static readonly object _lock = new object();
+
         public MatplotPlotImageService(IOptions<PythonConfig> pythonConfig)
         {
             _pythonConfig = pythonConfig;
@@ -20,12 +23,15 @@ namespace SeabornBlazorVisualizer.Data
 
         public Task<string> GenerateRandomizedCumulativeGraph()
         {
+
             string? result = null;
           
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
                 
-                dynamic np = Py.Import("numpy");
+                dynamic np = Py.Import("numpy");     
+                
+                //TODO : Remove imports of pandas and scipy and datetime if they are not needed
 
                 Py.Import("pandas");
                 Py.Import("scipy");
@@ -34,6 +40,9 @@ namespace SeabornBlazorVisualizer.Data
 
                 dynamic mpl = Py.Import("matplotlib");
                 dynamic plt = Py.Import("matplotlib.pyplot");
+
+                // Set dark theme
+                plt.style.use("ggplot");
 
                 mpl.use("Agg");
 
@@ -48,7 +57,7 @@ namespace SeabornBlazorVisualizer.Data
                 plt.clf();
 
                 // Plot data
-                plt.plot(values);
+                plt.plot(values, color: "blue");
 
                 string cwd = os.getcwd();                
 
@@ -63,11 +72,15 @@ namespace SeabornBlazorVisualizer.Data
                 ////just keep the last five images by looking at file created time 
                 ///
 
-                Directory.GetFiles(cwd + @"\wwwroot\GeneratedImages", "*.png")
-                 .OrderByDescending(File.GetLastWriteTime)
-                 .Skip(10)
-                 .ToList()
-                 .ForEach(File.Delete);
+                lock (_lock)
+                {
+
+                    Directory.GetFiles(cwd + @"\wwwroot\GeneratedImages", "*.png")
+                     .OrderByDescending(File.GetLastWriteTime)
+                     .Skip(10)
+                     .ToList()
+                     .ForEach(File.Delete);
+                }
 
                 //Py.Import("seaborn");
 
