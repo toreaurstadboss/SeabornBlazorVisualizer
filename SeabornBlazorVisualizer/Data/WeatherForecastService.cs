@@ -78,6 +78,14 @@ namespace SeabornBlazorVisualizer.Data
 
                 result = imageToCreatePath;
 
+                ////just keep the last five images by looking at file created time 
+                ///
+
+                Directory.GetFiles(cwd + @"\wwwroot\GeneratedImages", "*.png")
+                 .OrderByDescending(File.GetLastWriteTime)
+                 .Skip(10)
+                 .ToList()
+                 .ForEach(File.Delete);
 
                 //Py.Import("seaborn");
 
@@ -88,8 +96,8 @@ namespace SeabornBlazorVisualizer.Data
                 // Py.Import("seaborn");
                 // 
 
-               // result = "hullo";
-           
+                // result = "hullo";
+
                 //dynamic script = Py.Import(@"hello");
 
                 //result = script.InvokeMethod("get_hello_world");
