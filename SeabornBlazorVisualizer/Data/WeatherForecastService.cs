@@ -44,12 +44,19 @@ namespace SeabornBlazorVisualizer.Data
             {
                 
                 Py.Import("numpy");
-                //Py.Import("matplotlib");
-               // Py.Import("seaborn");              
-           
-                dynamic script = Py.Import(@"hello");
 
-                result = script.InvokeMethod("get_hello_world");
+                Py.Import("pandas");
+
+                //Py.Import("_imaging");
+                //Py.Import("matplotlib");
+                // Py.Import("seaborn");
+                // 
+
+                result = "hullo";
+           
+                //dynamic script = Py.Import(@"hello");
+
+                //result = script.InvokeMethod("get_hello_world");
 
 
 
