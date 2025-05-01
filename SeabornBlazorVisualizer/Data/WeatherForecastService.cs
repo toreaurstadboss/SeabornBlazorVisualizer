@@ -1,5 +1,6 @@
 using IronPython.Runtime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 using Python.Runtime;
 
@@ -10,22 +11,13 @@ namespace SeabornBlazorVisualizer.Data
 
         static bool runtime_initialized = false;
 
-        static WeatherForecastService()
+        private IOptions<PythonConfig>? _pythonConfig;
+
+        public WeatherForecastService(IOptions<PythonConfig> pythonConfig)
         {
-
-            string pythonDll = @"C:\Users\Tore\AppData\Local\Programs\Python\Python310\python310.dll";
-            // Set environment variables
-            Environment.SetEnvironmentVariable("PYTHONHOME", @"C:\programdata\anaconda3", EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONPATH", @"c:\programdata\anaconda3\lib\site-packages", EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", pythonDll);
-
-            //Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", @"C:\ProgramData\Anaconda3\python310.dll");
-            Environment.SetEnvironmentVariable("PYTHONNET_PYVER", "3.10");
-
-            PythonEngine.Initialize();
-            PythonEngine.BeginAllowThreads();
+            _pythonConfig = pythonConfig;
+            PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
-
 
         private static readonly string[] Summaries = new[]
         {
@@ -43,51 +35,18 @@ namespace SeabornBlazorVisualizer.Data
         }
 
 
-        public Task<string?> GetSomethingFromPython()
+        public Task<string> GetSomethingFromPython()
         {
-            //// Initialize the Python engine
-            //PythonEngine.Initialize();
-
-            ////using (Py.GIL())
-            ////{
-            ////    // Import numpy
-            ////    dynamic np = Py.Import("numpy");
-
-            ////    // Create a numpy array
-            ////    dynamic array = np.array(new int[] { 1, 2, 3, 4 });
-
-            ////    // Perform operations
-            ////    Console.WriteLine($"Sum: {array.sum()}");
-            ////}
-
-            //// Shutdown the Python engine
-            //PythonEngine.Shutdown();
-
-            // Python.Runtime.Runtime.PythonDLL = @"C:\Users\Tore\.conda\envs\py310\python310.dll";
-
             string? result = null;
 
           
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                if (!runtime_initialized)
-                {
-                    dynamic sys = Py.Import("sys");
-                    sys.path.append(@"C:\ProgramData\Anaconda3\Lib\site-packages");
-                    Console.WriteLine(sys.path);
-
-                    //add folders in solution too
-
-                    sys.path.append(@"Data/");
-                    runtime_initialized = true;
-                }
-
+                
                 Py.Import("numpy");
                 //Py.Import("matplotlib");
-               // Py.Import("seaborn");
-               
-
-              
+               // Py.Import("seaborn");              
+           
                 dynamic script = Py.Import(@"hello");
 
                 result = script.InvokeMethod("get_hello_world");

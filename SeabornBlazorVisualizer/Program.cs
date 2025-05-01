@@ -15,6 +15,8 @@ namespace SeabornBlazorVisualizer
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
 
+            builder.Services.Configure<PythonConfig>(builder.Configuration.GetSection(nameof(PythonConfig))); 
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
