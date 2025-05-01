@@ -10,8 +10,6 @@ namespace SeabornBlazorVisualizer.Data
     public class MatplotPlotImageService
     {
 
-        static bool runtime_initialized = false;
-
         private IOptions<PythonConfig>? _pythonConfig;
 
         public MatplotPlotImageService(IOptions<PythonConfig> pythonConfig)
