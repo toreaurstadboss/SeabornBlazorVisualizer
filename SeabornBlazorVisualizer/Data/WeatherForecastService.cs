@@ -48,6 +48,7 @@ namespace SeabornBlazorVisualizer.Data
                 Py.Import("pandas");
                 Py.Import("scipy");
                 Py.Import("datetime");
+                Py.Import("os");
 
                 //Py.Import("_imaging");
                 //Py.Import("matplotlib");
