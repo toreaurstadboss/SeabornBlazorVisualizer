@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="GeneratedImages\" />
+    <Folder Include="wwwroot\GeneratedImages\" />
   </ItemGroup>
 
 </Project>

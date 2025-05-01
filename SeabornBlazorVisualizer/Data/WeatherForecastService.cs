@@ -39,7 +39,6 @@ namespace SeabornBlazorVisualizer.Data
         public Task<string> GetSomethingFromPython()
         {
             string? result = null;
-
           
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
@@ -63,18 +62,21 @@ namespace SeabornBlazorVisualizer.Data
 
                 dynamic values = np.cumsum(np.random.randn(1000, 1));
 
+                // Ensure clearing the plot
+                plt.clf();
+
                 // Plot data
                 plt.plot(values);
 
-                string cwd = os.getcwd();
-
-                result = cwd;
+                string cwd = os.getcwd();                
 
                 // Save plot to PNG file
-                string savePath = $@"{cwd}\GeneratedImages\{Guid.NewGuid().ToString("N")}_plotimg.png";
+                string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
+                string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
 
-                plt.savefig(savePath);
+                plt.savefig(imageToCreateWithFolderPath);
 
+                result = imageToCreatePath;
 
 
                 //Py.Import("seaborn");

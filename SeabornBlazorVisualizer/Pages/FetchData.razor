@@ -13,6 +13,13 @@ Reply from IronPython:
 @ironPythonReply
 
 
+@if (@ironPythonReply != null){
+    <br />
+    <br />
+    <img width="500" src="@ironPythonReply" alt="Generated image from Matplotlib" />
+}
+
+
 @if (forecasts == null)
 {
     <p><em>Loading...</em></p>
