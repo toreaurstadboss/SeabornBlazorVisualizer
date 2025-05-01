@@ -13,7 +13,7 @@ namespace SeabornBlazorVisualizer
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<MatplotPlotImageService>();
 
             builder.Services.Configure<PythonConfig>(builder.Configuration.GetSection(nameof(PythonConfig))); 
 
