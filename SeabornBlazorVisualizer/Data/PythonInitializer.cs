@@ -27,7 +27,12 @@ namespace SeabornBlazorVisualizer.Data
             Environment.SetEnvironmentVariable("PYTHONPATH", config.PythonSitePackages, EnvironmentVariableTarget.Process);
             Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", config.PythonDllPath);
             Environment.SetEnvironmentVariable("PYTHONNET_PYVER", config.PythonVersion);
+            
             PythonEngine.Initialize();
+
+            PythonEngine.PythonHome = config.PythonHome ?? Environment.GetEnvironmentVariable("PYTHONHOME", EnvironmentVariableTarget.Process)!;
+            PythonEngine.PythonPath = config.PythonDllPath ?? Environment.GetEnvironmentVariable("PYTHONNET_PYDLL", EnvironmentVariableTarget.Process)!;
+
             PythonEngine.BeginAllowThreads();
             AddSitePackagesToPythonPath(pythonConfig);
             runtime_initialized = true;

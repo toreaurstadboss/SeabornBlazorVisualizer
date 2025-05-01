@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 using Python.Runtime;
+using static IronPython.Modules._ast;
 
 namespace SeabornBlazorVisualizer.Data
 {
@@ -43,19 +44,49 @@ namespace SeabornBlazorVisualizer.Data
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
                 
-                Py.Import("numpy");
+                dynamic np = Py.Import("numpy");
 
                 Py.Import("pandas");
                 Py.Import("scipy");
                 Py.Import("datetime");
-                Py.Import("os");
+                dynamic os = Py.Import("os");
+
+                dynamic mpl = Py.Import("matplotlib");
+                dynamic plt = Py.Import("matplotlib.pyplot");
+
+                mpl.use("Agg");
+
+
+                // Generate data
+                dynamic x = np.arange(0, 10, 0.1);
+                dynamic y = np.multiply(2, x); // Use NumPy's multiply function
+
+                dynamic values = np.cumsum(np.random.randn(1000, 1));
+
+                // Plot data
+                plt.plot(values);
+
+                string cwd = os.getcwd();
+
+                result = cwd;
+
+                // Save plot to PNG file
+                string savePath = $@"{cwd}\GeneratedImages\{Guid.NewGuid().ToString("N")}_plotimg.png";
+
+                plt.savefig(savePath);
+
+
+
+                //Py.Import("seaborn");
+
+                //Py.Import("seaborn");
 
                 //Py.Import("_imaging");
                 //Py.Import("matplotlib");
                 // Py.Import("seaborn");
                 // 
 
-                result = "hullo";
+               // result = "hullo";
            
                 //dynamic script = Py.Import(@"hello");
 
