@@ -50,6 +50,12 @@
     color: white;
 }
 
+
+/*.nav-menu {
+    min-width: 300px !important;*/ /* Adjust the width as needed */
+/*}*/
+
+
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;
