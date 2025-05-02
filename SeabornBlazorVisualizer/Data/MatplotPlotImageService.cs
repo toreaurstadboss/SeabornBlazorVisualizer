@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 using Python.Runtime;
 using System.Drawing;
+using System.IO.Pipelines;
 using static IronPython.Modules._ast;
 
 namespace SeabornBlazorVisualizer.Data
@@ -56,6 +57,10 @@ namespace SeabornBlazorVisualizer.Data
                 // Ensure clearing the plot
                 plt.clf();
 
+
+                // Create a figure with increased size
+                dynamic fig = plt.figure(figsize: new PyTuple(new PyObject[] { new PyFloat(6), new PyFloat(4) }));
+
                 // Plot data
                 plt.plot(values, color: "blue");
 
@@ -65,7 +70,7 @@ namespace SeabornBlazorVisualizer.Data
                 string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
                 string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
 
-                plt.savefig(imageToCreateWithFolderPath);
+                plt.savefig(imageToCreateWithFolderPath, dpi: 200);
 
                 result = imageToCreatePath;
 

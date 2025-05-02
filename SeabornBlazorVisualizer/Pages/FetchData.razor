@@ -39,18 +39,42 @@
 {
     <br />
     <br />
-    <img src="@generatedMatPlotImage" alt="Generated image from Matplotlib" />
+    <img src="@generatedMatPlotImage" class="plotImage" alt="Generated image from Matplotlib" />
 }
+
+
+<script>
+    document.querySelectorAll('img.PlotImage').forEach(img => {
+    img.onload = () => {
+    console.log('Image loaded:', img.src);
+    img.classList.add('loaded');
+    };
+    });
+</script>
 
 
 @code {
 
-    private string? generatedMatPlotImage;
+    private static string? generatedMatPlotImage;
 
-    private bool isLoadingMatPlotImage;
+    private static bool isLoadingMatPlotImage;
 
-    protected override async Task OnInitializedAsync()
-    {
+    private static DateTime? LastUpdate = null;
+
+    protected override async Task OnParametersSetAsync()
+    {       
+        var elapsedTimeSinceLastImage = DateTime.Now.Subtract(LastUpdate.HasValue ?
+            LastUpdate.Value : DateTime.Now.AddMinutes(-1)).TotalMilliseconds;
+
+        if (elapsedTimeSinceLastImage < 1000){
+            Console.WriteLine("MatplotLib loading : refusing to load quicker than once per second");
+            return; //HACK : do not render quicker than once per second to avoid double calls. TODO : Fix up this mess to avoid double renderings
+        }
+
+        LastUpdate = DateTime.Now;
+
+        Console.WriteLine();
+
         try
         {
             if (!isLoadingMatPlotImage)
@@ -58,7 +82,6 @@
                 isLoadingMatPlotImage = true;
                 generatedMatPlotImage = await MatplotPlotImageService.GenerateRandomizedCumulativeGraph();
             }
-
             isLoadingMatPlotImage = false;
         }
         catch (Exception err)
@@ -67,5 +90,6 @@
             isLoadingMatPlotImage = false;
         }
     }
+
 
 }
