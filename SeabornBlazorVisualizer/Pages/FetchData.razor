@@ -6,29 +6,51 @@
 
 <h1>MatplotLib Demo - Cumulative graph showing randomized data</h1>
 
-<p class="col-md-5">
-    This demo displays a Cumulative graph showing randomized data using MatPlotLib. This demo
-    uses a Anaconda 3 Python backend to generate the plots. The Demo itself is a Blazor server app
-    that makes use of Python.net library to interop with Python from .NET.
-    Setting up the right version for Anaconda takes time to find, so this repo includes a Anaconda3_Pip_List.txt file
-    showing the version of libs where the generation of Matplot plots works. Python 3.10 is used together with Anaconda
-    and these libraries are central:
+<div class="col-md-5">
 
-    <ul>
-        <li>pythonnet</li>
-        <li>matplotlib and mathplotlib.pyplot</li>
-        <li>numpy</li>
-        <li>pandas</li>
-        <li>scipy</li>
-        <li>Built in 'os' module of Python stdlibs</li>
-        <li>TODO: make the Demo also work with library : seaborn . This lib are considered by many as a bit more visually appealing than than MatPlotLib. It is built upon MatplotLib.</li>
-    </ul>
-</p>
+    <blockquote>
+        <p>Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python.</p>
+        <p>It is widely used in data science and machine learning for data visualization.</p>
+        <p>To read more information about Matplotlib, check the Info panel shown below and click the Show Info button.</p>
+    </blockquote>
 
-<blockquote>
-    <p>Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python.</p>
-    <p>It is widely used in data science and machine learning for data visualization.</p>
-</blockquote>
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Show Info
+    </button>
+
+    <br />
+
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+            This demo displays a Cumulative graph showing randomized data using MatPlotLib. This demo
+            uses a Anaconda 3 Python backend to generate the plots. The Demo itself is a Blazor server app
+            that makes use of Python.net library to interop with Python from .NET.
+            Setting up the right version for Anaconda takes time to find, so this repo includes a Anaconda3_Pip_List.txt file
+            showing the version of libs where the generation of Matplot plots works. Python 3.10 is used together with Anaconda
+            and these libraries are central:
+
+            <ul>
+                <li>pythonnet</li>
+                <li>matplotlib and mathplotlib.pyplot</li>
+                <li>numpy</li>
+                <li>pandas</li>
+                <li>scipy</li>
+                <li>Built in 'os' module of Python stdlibs</li>
+                <li>TODO: make the Demo also work with library : seaborn . This lib are considered by many as a bit more visually appealing than than MatPlotLib. It is built upon MatplotLib.</li>
+            </ul>
+        </div>
+    </div>
+
+    <br />
+
+    <h4>Information about the plot shown below</h4>
+    <p>
+        This demo shows a Cumulative graph showing randomized data using MatPlotLib. This demo
+        uses a Anaconda 3 Python backend to generate the plots. The Demo itself is a Blazor server app
+        that makes use of Python.net library to interop with Python from .NET.
+    </p>
+
+</div>
 
 @if (generatedMatPlotImage != null && !isLoadingMatPlotImage)
 {
@@ -36,14 +58,6 @@
 }
 
 
-<script>
-    document.querySelectorAll('img.PlotImage').forEach(img => {
-    img.onload = () => {
-    console.log('Image loaded:', img.src);
-    img.classList.add('loaded');
-    };
-    });
-</script>
 
 @* Reply from MatPlotLib service (showing relative path of where the generated plot was saved):
 @generatedMatPlotImage
@@ -59,11 +73,12 @@
     private static DateTime? LastUpdate = null;
 
     protected override async Task OnParametersSetAsync()
-    {       
+    {
         var elapsedTimeSinceLastImage = DateTime.Now.Subtract(LastUpdate.HasValue ?
             LastUpdate.Value : DateTime.Now.AddMinutes(-1)).TotalMilliseconds;
 
-        if (elapsedTimeSinceLastImage < 1000){
+        if (elapsedTimeSinceLastImage < 1000)
+        {
             Console.WriteLine("MatplotLib loading : refusing to load quicker than once per second");
             return; //HACK : do not render quicker than once per second to avoid double calls. TODO : Fix up this mess to avoid double renderings
         }
@@ -89,3 +104,13 @@
     }
 
 }
+
+        
+<script>
+    document.querySelectorAll('img.PlotImage').forEach(img => {
+    img.onload = () => {
+    console.log('Image loaded:', img.src);
+    img.classList.add('loaded');
+    };
+    });
+</script>
