@@ -56,6 +56,8 @@ namespace SeabornBlazorVisualizer.Data
             dynamic plt = Py.Import("matplotlib.pyplot");
             dynamic scipy = Py.Import("scipy");
 
+            mpl.use("Agg");
+
             return (np, os, scipy, mpl, plt);
         }
 
