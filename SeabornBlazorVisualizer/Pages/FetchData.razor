@@ -6,7 +6,7 @@
 
 <h1>MatplotLib Demo - Cumulative graph showing randomized data</h1>
 
-<p>
+<p class="col-md-5">
     This demo displays a Cumulative graph showing randomized data using MatPlotLib. This demo
     uses a Anaconda 3 Python backend to generate the plots. The Demo itself is a Blazor server app
     that makes use of Python.net library to interop with Python from .NET.
@@ -30,15 +30,8 @@
     <p>It is widely used in data science and machine learning for data visualization.</p>
 </blockquote>
 
-@* Reply from MatPlotLib service (showing relative path of where the generated plot was saved):
-
-@generatedMatPlotImage
- *@
-
 @if (generatedMatPlotImage != null && !isLoadingMatPlotImage)
 {
-    <br />
-    <br />
     <img src="@generatedMatPlotImage" class="plotImage" alt="Generated image from Matplotlib" />
 }
 
@@ -51,6 +44,10 @@
     };
     });
 </script>
+
+@* Reply from MatPlotLib service (showing relative path of where the generated plot was saved):
+@generatedMatPlotImage
+ *@
 
 
 @code {
@@ -90,6 +87,5 @@
             isLoadingMatPlotImage = false;
         }
     }
-
 
 }
