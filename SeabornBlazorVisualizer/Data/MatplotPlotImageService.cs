@@ -29,13 +29,13 @@ namespace SeabornBlazorVisualizer.Data
           
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                
+
                 //dynamic np = Py.Import("numpy");     
-                
+
                 //TODO : Remove imports of pandas and scipy and datetime if they are not needed
 
                 //Py.Import("pandas");
-                //Py.Import("scipy");
+                Py.Import("scipy");
                 //Py.Import("datetime");
 
                 //dynamic os = Py.Import("os");
@@ -43,7 +43,7 @@ namespace SeabornBlazorVisualizer.Data
                 //dynamic mpl = Py.Import("matplotlib");
                 //dynamic plt = Py.Import("matplotlib.pyplot");
 
-                var (np, os, mpl, plt) = PythonHelper.ImportPythonModules();
+                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
 
                 // Set dark theme
                 plt.style.use("ggplot");

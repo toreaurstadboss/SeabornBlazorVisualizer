@@ -39,25 +39,24 @@ namespace SeabornBlazorVisualizer.Data
         }
 
         /// <summary>
-        /// Imports Python modules. Returned are the following modules :
-        /// np : numpy
-        /// os : OS module (standard library)
-        /// mpl : matplotlib
-        /// plt : matplotlib.pyplot (it is always cleared using 'clf' to ensure the plot is empty to avoid overlapping with previous plot renderings)
+        /// Imports Python modules. Returned are the following modules:
+        /// <para>np (numpy)</para>
+        /// <para>os (OS module - standard library)</para>
+        /// <para>scipy (scipy)</para>
+        /// <para>mpl (matplotlib)</para>
+        /// <para>plt (matplotlib.pyplot </para>
         /// </summary>
-        /// <returns></returns>
-        public static (dynamic np, dynamic os, dynamic mpl, dynamic plt) ImportPythonModules()
+        /// <returns>Tuple of Python modules</returns>
+        public static (dynamic np, dynamic os, dynamic scipy, dynamic mpl, dynamic plt) ImportPythonModules()
         {
-            //using (Py.GIL())
-            //{
-                dynamic np = Py.Import("numpy");
-                dynamic os = Py.Import("os");
-                dynamic mpl = Py.Import("matplotlib");
-                dynamic plt = Py.Import("matplotlib.pyplot");
 
-                //plt.clf(); //always clear the plot
-                return (np, os, mpl, plt);
-            //}
+            dynamic np = Py.Import("numpy");
+            dynamic os = Py.Import("os");
+            dynamic mpl = Py.Import("matplotlib");
+            dynamic plt = Py.Import("matplotlib.pyplot");
+            dynamic scipy = Py.Import("scipy");
+
+            return (np, os, scipy, mpl, plt);
         }
 
         private static void AddSitePackagesToPythonPath(IOptions<PythonConfig> pythonConfig)
