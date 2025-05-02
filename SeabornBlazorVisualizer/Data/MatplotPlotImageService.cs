@@ -49,14 +49,13 @@ namespace SeabornBlazorVisualizer.Data
 
 
                 // Generate data
-                dynamic x = np.arange(0, 10, 0.1);
-                dynamic y = np.multiply(2, x); // Use NumPy's multiply function
+                //dynamic x = np.arange(0, 10, 0.1);
+                //dynamic y = np.multiply(2, x); // Use NumPy's multiply function
 
                 dynamic values = np.cumsum(np.random.randn(1000, 1));
 
                 // Ensure clearing the plot
                 plt.clf();
-
 
                 // Create a figure with increased size
                 dynamic fig = plt.figure(figsize: new PyTuple(new PyObject[] { new PyFloat(6), new PyFloat(4) }));
@@ -64,79 +63,59 @@ namespace SeabornBlazorVisualizer.Data
                 // Plot data
                 plt.plot(values, color: "blue");
 
-                string cwd = os.getcwd();                
+                string cwd = os.getcwd();
 
-                // Save plot to PNG file
-                string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
-                string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
-
-                plt.savefig(imageToCreateWithFolderPath, dpi: 200);
-
-                result = imageToCreatePath;
-
-                ////just keep the last five images by looking at file created time 
-                ///
-
-                lock (_lock)
-                {
-
-                    Directory.GetFiles(cwd + @"\wwwroot\GeneratedImages", "*.png")
-                     .OrderByDescending(File.GetLastWriteTime)
-                     .Skip(10)
-                     .ToList()
-                     .ForEach(File.Delete);
-                }
-
-                //Py.Import("seaborn");
-
-                //Py.Import("seaborn");
-
-                //Py.Import("_imaging");
-                //Py.Import("matplotlib");
-                // Py.Import("seaborn");
-                // 
-
-                // result = "hullo";
-
-                //dynamic script = Py.Import(@"hello");
-
-                //result = script.InvokeMethod("get_hello_world");
-
-
-
-                // Import seaborn and matplotlib
-                // Import Seaborn
-                //dynamic sys = Py.Import("sys");
-                //sys.path.append(@"Data/");
-                //dynamic script = Py.Import(@"hello");
-
-                //result = script.InvokeMethod("get_hello_world");
-
-
-                //dynamic sns = Py.Import("numpy");
-
-                //// Example: Use Seaborn's functionality (e.g., create a dataset)
-                //dynamic dataset = sns.load_dataset("iris");
-                //System.Console.WriteLine(dataset.head()); // Display the first few rows
-
-                //dynamic plt = Py.Import("matplotlib.pyplot");
-
-                //// Create a simple plot
-                //dynamic data = sns.load_dataset("penguins");
-                //sns.histplot(data: data, x: "flipper_length_mm", hue: "species", multiple: "stack");
-
-                //// Show the plot
-                //plt.figure.savefig("output.png");
+                result = SavePlot(plt, theme: "ggplot", dpi: 200);
 
             }
 
-            //PythonEngine.Shutdown();
-
             return Task.FromResult(result);
         }
-          
-        
-        
+
+        /// <summary>
+        /// Saves the plot to a PNG file with a unique name based on the current date and time
+        /// </summary>
+        /// <param name="plot">Plot, must be a PyPlot plot use Python.net Py.Import("matplotlib.pyplot")</param>
+        /// <param name="theme"></param>
+        /// <param name="dpi"></param>
+        /// <returns></returns>
+        public string? SavePlot(dynamic plt, string theme = "ggplot", int dpi = 200)
+        {
+            string? plotSavedImagePath = null;
+            //using (Py.GIL()) //Python Global Interpreter Lock (GIL)
+            //{
+                dynamic os = Py.Import("os");
+                dynamic mpl = Py.Import("matplotlib");
+                // Set dark theme
+                plt.style.use(theme);
+                mpl.use("Agg"); //set up rendering of plot to back-buffer ('headless' mode)
+             
+                string cwd = os.getcwd();
+                // Save plot to PNG file
+                string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
+                string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
+                plt.savefig(imageToCreateWithFolderPath, dpi: dpi); //save the plot to a file (use full path)
+                plotSavedImagePath = imageToCreatePath;
+
+                CleanupOldGeneratedImages(cwd);
+            //}
+            return plotSavedImagePath;
+        }
+
+        private static void CleanupOldGeneratedImages(string cwd)
+        {
+            lock (_lock)
+            {
+
+                Directory.GetFiles(cwd + @"\wwwroot\GeneratedImages", "*.png")
+                 .OrderByDescending(File.GetLastWriteTime)
+                 .Skip(10)
+                 .ToList()
+                 .ForEach(File.Delete);
+            }
+        }
+
+
 
         //public Task<string?> GetSomethingFromPython()
         //{
