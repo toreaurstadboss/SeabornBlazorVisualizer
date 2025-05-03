@@ -34,7 +34,25 @@ namespace SeabornBlazorVisualizer.Data
                 // Ensure clearing the plot
                 plt.clf();
 
-                plt.hist(distribution, edgecolor: "black");
+                var counts_bins_patches = plt.hist(distribution, edgecolor: "black");
+
+                // Normalize counts to get colors 
+                var counts = counts_bins_patches[0];
+                var patches = counts_bins_patches[2];
+
+                var norm_counts = counts / np.max(counts);
+
+                int norm_counts_size = Convert.ToInt32(norm_counts.size.ToString());
+
+                // Apply colors to patches based on frequency
+                for (int i = 0; i < norm_counts_size; i++)
+                {
+                    plt.setp(patches[i], "facecolor", plt.cm.viridis(norm_counts[i]));
+                }
+
+                plt.xlabel("Height (cm)");
+
+                plt.ylabel("Number of recruis");
 
                 string cwd = os.getcwd();
 
@@ -47,18 +65,17 @@ namespace SeabornBlazorVisualizer.Data
                 var average_formatted = np.round(average, 2);
                 var std_dev_formatted = np.round(std_dev, 2);
 
-
                 //Add legend with average and standard deviation
                 plt.legend(new string[] { $"Total count: {total_count}\n Average: {average_formatted} cm\nStd Dev: {std_dev_formatted} cm" });
 
-                result = SavePlot(plt, theme: "ggplot", dpi: 200);
+                plt.title("Millitary recruits - Height (cm)");
+
+
+                result = SavePlot(plt, theme: "bmh", dpi: 200);
             }
 
             return Task.FromResult(result);
         }
-
-
-
 
         public Task<string> GeneratedCumulativeGraphFromValues(List<double> values)
         {
