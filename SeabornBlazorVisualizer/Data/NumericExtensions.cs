@@ -8,7 +8,12 @@ namespace SeabornBlazorVisualizer.Data
 
         public static IEnumerable<double> GeneratedStandardNormalSamples(int count)
         {
-            var normalDistribution = new Normal(0, 1); //MathNet.Numerics lib - Normal distribution https://github.com/mathnet/mathnet-numerics/blob/master/src/Numerics/Distributions/Normal.cs
+            return GeneratedStandardNormalSamples(count, 0, 1);
+        }
+
+        public static IEnumerable<double> GeneratedStandardNormalSamples(int count, int mean, int stdev)
+        {
+            var normalDistribution = new Normal(mean, stdev); //MathNet.Numerics lib - Normal distribution https://github.com/mathnet/mathnet-numerics/blob/master/src/Numerics/Distributions/Normal.cs
             foreach (var n in Enumerable.Range(0, count))
             {
                 yield return normalDistribution.Sample();

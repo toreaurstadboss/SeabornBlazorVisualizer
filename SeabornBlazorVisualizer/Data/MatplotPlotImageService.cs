@@ -22,6 +22,31 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
+        public Task<string> GenerateHistogram(List<double> values)
+        {
+            string? result = null;
+            using (Py.GIL()) //Python Global Interpreter Lock (GIL)
+            {
+                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
+
+                var distribution = np.array(values.ToArray());
+
+                // Ensure clearing the plot
+                plt.clf();
+
+                plt.hist(distribution, edgecolor: "black");
+
+                string cwd = os.getcwd();
+
+                result = SavePlot(plt, theme: "ggplot", dpi: 200);
+            }
+
+            return Task.FromResult(result);
+        }
+
+
+
+
         public Task<string> GeneratedCumulativeGraphFromValues(List<double> values)
         {
             string? result = null;

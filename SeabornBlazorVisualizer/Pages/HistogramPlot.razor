@@ -1,0 +1,90 @@
+﻿@page "/histogramplot"
+
+@using SeabornBlazorVisualizer.Data
+@inject MatplotPlotImageService MatplotPlotImageService
+
+<PageTitle>MatplotLib - HistogramPlot</PageTitle>
+
+<h1>MatplotLib Demo -Histogram plot with .NET</h1>
+
+<div class="col-md-5">
+
+    <br />
+
+    <h4>Information about the plot shown below</h4>
+    <p>
+        This demo shows a Histogram plot. It shows both a histogram showing the distribution divided by 'bins' as a frequency diagram.
+        In addition, to the right is displayed the percentage-wise representation of this frequency distribution.
+        <br />
+
+        <br />
+        The values are sent from .NET as a list of doubles and used with Python.NET and MatplotLib and Numpy to create this histogram.
+    </p>
+
+</div>
+
+@if (generatedMatPlotImage != null && !isLoadingMatPlotImage)
+{
+    <img src="@generatedMatPlotImage" id="plotHistogram" class="plotImage" alt="Generated image from Matplotlib" />
+}
+
+@code {
+
+    private static string? generatedMatPlotImage;
+
+    private static bool isLoadingMatPlotImage;
+
+    private static DateTime? LastUpdate = null;
+
+    // Generate an array of 1000 random normal samples and then calculate the cumulative sum of those samples and return
+    // the resulting list of these cumulative sums
+    private List<double> CreateArrayOfNormalSamples(){
+
+        var normalSamples = NumericExtensions.GeneratedStandardNormalSamples(count: 1000, mean: 182, stdev: 8);
+        return normalSamples.ToList();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var elapsedTimeSinceLastImage = DateTime.Now.Subtract(LastUpdate.HasValue ?
+            LastUpdate.Value : DateTime.Now.AddMinutes(-1)).TotalMilliseconds;
+
+        if (elapsedTimeSinceLastImage < 500)
+        {
+            Console.WriteLine("MatplotLib loading : refusing to load quicker than once per second");
+            return; //HACK : do not render quicker than once per second to avoid double calls. TODO : Fix up this mess to avoid double renderings
+        }
+
+        LastUpdate = DateTime.Now;
+
+        Console.WriteLine();
+
+        try
+        {
+            if (!isLoadingMatPlotImage)
+            {
+                isLoadingMatPlotImage = true;
+
+                generatedMatPlotImage = await MatplotPlotImageService.GenerateHistogram(CreateArrayOfNormalSamples());
+            }
+            isLoadingMatPlotImage = false;
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine(err.ToString());
+            isLoadingMatPlotImage = false;
+        }
+
+    }
+
+}
+
+        
+@* <script>
+    document.querySelectorAll('img.PlotImage').forEach(img => {
+    img.onload = () => {
+    console.log('Image loaded:', img.src);
+    img.classList.add('loaded');
+    };
+    });
+</script> *@
