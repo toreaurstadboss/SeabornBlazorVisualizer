@@ -38,6 +38,19 @@ namespace SeabornBlazorVisualizer.Data
 
                 string cwd = os.getcwd();
 
+                // Calculate average and standard deviation
+                var average = np.mean(distribution);
+                var std_dev = np.std(distribution);
+                var total_count = np.size(distribution);
+
+                // Format average and standard deviation to two decimal places
+                var average_formatted = np.round(average, 2);
+                var std_dev_formatted = np.round(std_dev, 2);
+
+
+                //Add legend with average and standard deviation
+                plt.legend(new string[] { $"Total count: {total_count}\n Average: {average_formatted} cm\nStd Dev: {std_dev_formatted} cm" });
+
                 result = SavePlot(plt, theme: "ggplot", dpi: 200);
             }
 
