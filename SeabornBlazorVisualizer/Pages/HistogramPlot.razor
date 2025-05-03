@@ -40,7 +40,7 @@
     // the resulting list of these cumulative sums
     private List<double> CreateArrayOfNormalSamples(){
 
-        var normalSamples = NumericExtensions.GeneratedStandardNormalSamples(count: 1000, mean: 182, stdev: 8);
+        var normalSamples = NumericExtensions.GeneratedStandardNormalSamples(count: 772, mean: 182, stdev: 8);
         return normalSamples.ToList();
     }
 
@@ -65,7 +65,7 @@
             {
                 isLoadingMatPlotImage = true;
 
-                generatedMatPlotImage = await MatplotPlotImageService.GenerateHistogram(CreateArrayOfNormalSamples());
+                generatedMatPlotImage = await MatplotPlotImageService.GenerateHistogram(CreateArrayOfNormalSamples(), title: "Heights of millitary recruits", xlabel: "Height (cm)", ylabel: "Number of recruits");
             }
             isLoadingMatPlotImage = false;
         }
