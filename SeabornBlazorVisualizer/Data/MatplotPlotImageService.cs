@@ -31,10 +31,17 @@ namespace SeabornBlazorVisualizer.Data
 
                 var distribution = np.array(values.ToArray());
 
-                // Ensure clearing the plot
-                plt.clf();
+                //// Ensure clearing the plot
+                //plt.clf();
 
-                var counts_bins_patches = plt.hist(distribution, edgecolor: "black");
+                var fig = plt.figure(); //create a new figure
+                var ax1 = fig.add_subplot(1, 2, 1);
+                var ax2 = fig.add_subplot(1, 2, 2);
+
+                // Add style
+                plt.style.use("ggplot");
+
+                var counts_bins_patches = ax1.hist(distribution, edgecolor: "black");
 
                 // Normalize counts to get colors 
                 var counts = counts_bins_patches[0];
@@ -50,9 +57,12 @@ namespace SeabornBlazorVisualizer.Data
                     plt.setp(patches[i], "facecolor", plt.cm.viridis(norm_counts[i])); //plt.cm is the colormap module in MatPlotlib. viridis creates color maps from normalized value 0 to 1 that is optimized for color-blind people.
                 }
 
-                plt.xlabel("Height (cm)");
+                // **** AX1 Histogram first - frequency counts ***** 
 
-                plt.ylabel("Number of recruis");
+                ax1.set_xlabel("Height (cm)");
+                ax1.set_ylabel("Number of recruits");
+
+              //  ax1.set_titlesize(8);
 
                 string cwd = os.getcwd();
 
@@ -66,12 +76,36 @@ namespace SeabornBlazorVisualizer.Data
                 var std_dev_formatted = np.round(std_dev, 2);
 
                 //Add legend with average and standard deviation
-                plt.legend(new string[] { $"Total count: {total_count}\n Average: {average_formatted} cm\nStd Dev: {std_dev_formatted} cm" });
+                ax1.legend(new string[] { $"Total count: {total_count}\n Average: {average_formatted} cm\nStd Dev: {std_dev_formatted} cm" }, framealpha: 0.5, fancybox: true);
 
-                plt.title("Millitary recruits - Height (cm)");
+                ax1.set_title("Millitary recruits - Height (cm)");
+                ax1.set_xlabel("Height (cm)");
+                ax1.set_ylabel("Number of recruits");
 
+                //***** AX2 : Set up ax2 = Percentage histogram next *******
 
-                result = SavePlot(plt, theme: "bmh", dpi: 200);
+                // Fix for CS1977: Cast the lambda expression to a delegate type
+                ax2.yaxis.set_major_formatter((PyObject)plt.FuncFormatter(new Func<double, int, string>((y, _) => $"{y:P0}")));
+
+                
+                ax2.hist(distribution, edgecolor: "black", weights: np.ones(distribution.size) / distribution.size);
+
+                // Add title
+                ax2.set_title("Military recruits - Height (cm) - %");
+
+                // Format y-axis to show percentages
+                ax2.yaxis.set_major_formatter(plt.FuncFormatter(new Func<double, int, string>((y, _) => $"{y:P0}")));
+
+                // tight layout to prevent overlap 
+                plt.tight_layout(); 
+
+                plt.style.use("classic");
+
+                // Show the plot with the two subplots at last (render to back buffer)
+
+                plt.show();
+
+                result = SavePlot(plt, theme: "bmh", dpi: 100);
             }
 
             return Task.FromResult(result);
