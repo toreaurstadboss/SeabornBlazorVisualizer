@@ -47,7 +47,7 @@ namespace SeabornBlazorVisualizer.Data
                 // Apply colors to patches based on frequency
                 for (int i = 0; i < norm_counts_size; i++)
                 {
-                    plt.setp(patches[i], "facecolor", plt.cm.viridis(norm_counts[i]));
+                    plt.setp(patches[i], "facecolor", plt.cm.viridis(norm_counts[i])); //plt.cm is the colormap module in MatPlotlib. viridis creates color maps from normalized value 0 to 1 that is optimized for color-blind people.
                 }
 
                 plt.xlabel("Height (cm)");
