@@ -22,6 +22,33 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
+        public Task<string> GeneratedCumulativeGraphFromValues(List<double> values)
+        {
+            string? result = null;
+            using (Py.GIL()) //Python Global Interpreter Lock (GIL)
+            {
+                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
+
+                dynamic pythonValues = np.cumsum(np.array(values.ToArray()));
+
+                // Ensure clearing the plot
+                plt.clf();
+
+                // Create a figure with increased size
+                dynamic fig = plt.figure(figsize: new PyTuple(new PyObject[] { new PyFloat(6), new PyFloat(4) }));
+
+                // Plot data
+                plt.plot(values, color: "green");
+
+                string cwd = os.getcwd();
+
+                result = SavePlot(plt, theme: "ggplot", dpi: 200);
+
+            }
+
+            return Task.FromResult(result);
+        }
+
         public Task<string> GenerateRandomizedCumulativeGraph()
         {
             string? result = null;          

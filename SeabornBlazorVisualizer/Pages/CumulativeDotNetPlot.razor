@@ -1,10 +1,11 @@
-﻿@page "/"
+﻿@page "/cumulativedotnetplot"
+
 @using SeabornBlazorVisualizer.Data
 @inject MatplotPlotImageService MatplotPlotImageService
 
-<PageTitle>MatplotLib - Cumulative graph showing randomized data</PageTitle>
+<PageTitle>MatplotLib - Cumulative graph showing provided data from .NET</PageTitle>
 
-<h1>MatplotLib Demo - Cumulative graph showing randomized data</h1>
+<h1>MatplotLib Demo - Cumulative graph showing provided data from .NET</h1>
 
 <div class="col-md-5">
 
@@ -45,11 +46,12 @@
 
     <h4>Information about the plot shown below</h4>
     <p>
-        This demo shows a Cumulative graph showing randomized data using MatPlotLib. This demo
+        This demo shows a Cumulative graph showing provided data from .NET using MatPlotLib. This demo
         uses a Anaconda 3 Python backend to generate the plots. The Demo itself is a Blazor server app
         that makes use of Python.net library to interop with Python from .NET.
 
-        The cumulative graph is generated using Python.NET and Numpy.
+        The cumulative graph is generated using Python.NET and Numpy.The data is sent to the target .NET service method,
+        which will then use Python.Net and libs Matplotlib, Numpy (and more) to generate the plot and save the plot to an image, which is then displayed in this app.
     </p>
 
 </div>
@@ -59,11 +61,6 @@
     <img src="@generatedMatPlotImage" class="plotImage" alt="Generated image from Matplotlib" />
 }
 
-@* Reply from MatPlotLib service (showing relative path of where the generated plot was saved):
-@generatedMatPlotImage
- *@
-
-
 @code {
 
     private static string? generatedMatPlotImage;
@@ -71,6 +68,14 @@
     private static bool isLoadingMatPlotImage;
 
     private static DateTime? LastUpdate = null;
+
+    // Generate an array of 1000 random normal samples and then calculate the cumulative sum of those samples and return
+    // the resulting list of these cumulative sums
+    private List<double> CreateCumulativeSumArrayFromNormalSamples(){
+
+        var normalSamples = NumericExtensions.GeneratedStandardNormalSamples(count: 1000);
+        return normalSamples.CumulativeSum().ToList();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -92,7 +97,8 @@
             if (!isLoadingMatPlotImage)
             {
                 isLoadingMatPlotImage = true;
-                generatedMatPlotImage = await MatplotPlotImageService.GenerateRandomizedCumulativeGraph();
+
+                generatedMatPlotImage = await MatplotPlotImageService.GeneratedCumulativeGraphFromValues(CreateCumulativeSumArrayFromNormalSamples());
             }
             isLoadingMatPlotImage = false;
         }
@@ -106,8 +112,8 @@
 
 }
 
-@*         
-<script>
+        
+@* <script>
     document.querySelectorAll('img.PlotImage').forEach(img => {
     img.onload = () => {
     console.log('Image loaded:', img.src);
