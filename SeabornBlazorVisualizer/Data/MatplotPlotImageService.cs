@@ -22,6 +22,82 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
+        public Task<string> GenerateDefiniteIntegral()
+        {
+            string? result = null;
+
+            using (Py.GIL()) // Ensure thread safety for Python calls
+            {
+                dynamic np = Py.Import("numpy");
+                dynamic plt = Py.Import("matplotlib.pyplot");
+                dynamic Polygon = Py.Import("matplotlib.patches").GetAttr("Polygon");
+
+                // Create a Python execution scope
+                using (var scope = Py.CreateScope())
+                {
+                    // Define the function inside the scope
+                    scope.Exec(@"
+import numpy as np
+def func(x):
+    return (x - 3) * (x - 5) * (x - 12) + 85
+");
+
+                    // Retrieve function reference from scope
+                    dynamic func = scope.Get("func");
+
+                    // Define integration limits
+                    double a = 2, b = 9;
+
+                    // Generate x-values
+                    dynamic x = np.linspace(0, 10, 100);
+                    dynamic y = func.Invoke(x);
+
+                    // Create plot figure
+                    var fig = plt.figure();
+                    var ax = fig.add_subplot(111);
+                    ax.plot(x, y, "r", linewidth: 2);
+                    ax.set_ylim(0, null);
+
+                    // Select range for integral shading
+                    dynamic ix = np.linspace(a, b, 100);
+                    dynamic iy = func.Invoke(ix);
+
+                    // **Fix: Properly Construct Vertices for Polygon**
+                    List<Tuple<double, double>> verts = new List<Tuple<double, double>>
+                {
+                    new Tuple<double, double>(a, 0) // Start at (a, 0)
+                };
+
+                    // Ensure each (x, y) pair is added correctly
+                    int length = (int)np.size(ix);
+                    for (int i = 0; i < length; i++)
+                    {
+                        double xi = (double)ix[i];
+                        double yi = (double)iy[i];
+                        verts.Add(new Tuple<double, double>(xi, yi)); // Add tuple formatted (x, y)
+                    }
+
+                    verts.Add(new Tuple<double, double>(b, 0)); // End at (b, 0)
+
+                    //// **Fix: Correctly Instantiate Polygon**
+                    //var poly = Polygon(verts); 
+
+                    //   // new PyDict { { "facecolor", "0.9" }, { "edgecolor", "0.2" } });
+                    //ax.add_patch(poly);
+
+                    //// Compute integral area
+                    //double area = np.trapezoid(iy, ix);
+                    //ax.text(0.5 * (a + b), 30, "$\\int_a^b f(x)\\mathrm{d}x$", ha: "center", fontsize: 20);
+                    //ax.text(0.5 * (a + b), 10, $"Area = {area:F2}", ha: "center", fontsize: 12);
+
+                    plt.show();
+
+                    result = SavePlot(plt, dpi: 180);
+                }
+            }
+            return Task.FromResult(result);
+        }
+
         public Task<string> GenerateHistogram(List<double> values, string title = "Provide Plot title", string xlabel = "Provide xlabel title", string ylabel = "Provide ylabel title")
         {
             string? result = null;

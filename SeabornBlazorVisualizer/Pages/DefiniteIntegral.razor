@@ -1,0 +1,80 @@
+﻿@page "/definiteintegral"
+
+@using SeabornBlazorVisualizer.Data
+@inject MatplotPlotImageService MatplotPlotImageService
+
+<PageTitle>MatplotLib - Definite integral</PageTitle>
+
+<h1>MatplotLib Demo - Definite integral</h1>
+
+<div class="col-md-5">
+
+    <br />
+
+    <h4>Information about the plot shown below</h4>
+    <p>
+        This demo shows a Definite integral. It shows both a graph showing a polynomial and also the calculated area of the definite integral between limits a and b.
+        <br />
+    </p>
+
+</div>
+
+@if (generatedMatPlotImage != null && !isLoadingMatPlotImage)
+{
+    <img src="@generatedMatPlotImage" id="plotDefiniteIntegral" class="plotImage" alt="Generated image from Matplotlib" />
+}
+
+@code {
+
+    private static string? generatedMatPlotImage;
+
+    private static bool isLoadingMatPlotImage;
+
+    private static DateTime? LastUpdate = null;
+
+  
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var elapsedTimeSinceLastImage = DateTime.Now.Subtract(LastUpdate.HasValue ?
+            LastUpdate.Value : DateTime.Now.AddMinutes(-1)).TotalMilliseconds;
+
+        if (elapsedTimeSinceLastImage < 500)
+        {
+            Console.WriteLine("MatplotLib loading : refusing to load quicker than once per second");
+            return; //HACK : do not render quicker than once per second to avoid double calls. TODO : Fix up this mess to avoid double renderings
+        }
+
+        LastUpdate = DateTime.Now;
+
+        Console.WriteLine();
+
+        try
+        {
+            if (!isLoadingMatPlotImage)
+            {
+                isLoadingMatPlotImage = true;
+
+                generatedMatPlotImage = await MatplotPlotImageService.GenerateDefiniteIntegral();
+            }
+            isLoadingMatPlotImage = false;
+        }
+        catch (Exception err)
+        {
+            Console.WriteLine(err.ToString());
+            isLoadingMatPlotImage = false;
+        }
+
+    }
+
+}
+
+        
+@* <script>
+    document.querySelectorAll('img.PlotImage').forEach(img => {
+    img.onload = () => {
+    console.log('Image loaded:', img.src);
+    img.classList.add('loaded');
+    };
+    });
+</script> *@

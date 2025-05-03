@@ -30,6 +30,12 @@
             </NavLink>
         </div>
 
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="definiteintegral" @onclick="ReloadDefiniteIntegral">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Definite integral
+            </NavLink>
+        </div>
+
     </nav>
 </div>
 
@@ -44,16 +50,25 @@
     }
 
     private void ReloadHistogram(){
-        Navigation.NavigateTo("histogramplot", forceLoad: false);
+        Navigation.NavigateTo("histogramplot" + GetNonce());
     }
 
     private void ReloadCumulativePlot(){
-        Navigation.NavigateTo("/"); // Reload the page to show the updated plot
+        Navigation.NavigateTo("/" + GetNonce()); // Reload the page to show the updated plot
     }
 
     private void ReloadCumulativeDotNetPlot(){
-        Navigation.NavigateTo("cumulativedotnetplot"); // Reload the page to show the updated plot
+        Navigation.NavigateTo("cumulativedotnetplot" + GetNonce()); // Reload the page to show the updated plot
     }
 
+    private void ReloadDefiniteIntegral()
+    {
+        Navigation.NavigateTo("definiteintegral" + GetNonce());        
+    }
+
+    private string GetNonce()
+    {
+        return "?nonce=" + Guid.NewGuid().ToString("N");
+    }
 
 }
