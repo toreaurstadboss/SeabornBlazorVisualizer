@@ -1,5 +1,6 @@
 using IronPython.Runtime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 using Python.Runtime;
@@ -30,7 +31,8 @@ namespace SeabornBlazorVisualizer.Data
             {
                 dynamic np = Py.Import("numpy");
                 dynamic plt = Py.Import("matplotlib.pyplot");
-                dynamic Polygon = Py.Import("matplotlib.patches").GetAttr("Polygon");
+
+                dynamic patches = Py.Import("matplotlib.patches"); // Import patches module
 
                 // Create a Python execution scope
                 using (var scope = Py.CreateScope())
@@ -62,35 +64,33 @@ def func(x):
                     dynamic ix = np.linspace(a, b, 100);
                     dynamic iy = func.Invoke(ix);
 
-                    // **Fix: Properly Construct Vertices for Polygon**
-                    List<Tuple<double, double>> verts = new List<Tuple<double, double>>
-                {
-                    new Tuple<double, double>(a, 0) // Start at (a, 0)
-                };
+                    // **Fix: Separate x and y coordinates properly**
+                    List<double> xCoords = new List<double> { a }; // Start at (a, 0)
+                    List<double> yCoords = new List<double> { 0 };
 
-                    // Ensure each (x, y) pair is added correctly
                     int length = (int)np.size(ix);
                     for (int i = 0; i < length; i++)
                     {
-                        double xi = (double)ix[i];
-                        double yi = (double)iy[i];
-                        verts.Add(new Tuple<double, double>(xi, yi)); // Add tuple formatted (x, y)
+                        xCoords.Add((double)ix[i]);
+                        yCoords.Add((double)iy[i]);
                     }
 
-                    verts.Add(new Tuple<double, double>(b, 0)); // End at (b, 0)
+                    xCoords.Add(b); // End at (b, 0)
+                    yCoords.Add(0);
 
-                    //// **Fix: Correctly Instantiate Polygon**
-                    //var poly = Polygon(verts); 
+                    // Convert x and y lists to NumPy arrays
+                    dynamic npVerts = np.column_stack(new object[] { np.array(xCoords), np.array(yCoords) });
 
-                    //   // new PyDict { { "facecolor", "0.9" }, { "edgecolor", "0.2" } });
-                    //ax.add_patch(poly);
+                    // **Correctly Instantiate Polygon Using NumPy Array**
+                    dynamic poly = patches.Polygon(npVerts, facecolor: "0.6", edgecolor: "0.2");
+                    ax.add_patch(poly);
 
-                    //// Compute integral area
-                    //double area = np.trapezoid(iy, ix);
-                    //ax.text(0.5 * (a + b), 30, "$\\int_a^b f(x)\\mathrm{d}x$", ha: "center", fontsize: 20);
-                    //ax.text(0.5 * (a + b), 10, $"Area = {area:F2}", ha: "center", fontsize: 12);
-
+                    // Compute integral area
+                    double area = np.trapezoid(iy, ix);
+                    ax.text(0.5 * (a + b), 30, "$\\int_a^b f(x)\\mathrm{d}x$", ha: "center", fontsize: 20);
+                    ax.text(0.5 * (a + b), 10, $"Area = {area:F2}", ha: "center", fontsize: 12);
                     plt.show();
+
 
                     result = SavePlot(plt, dpi: 180);
                 }
