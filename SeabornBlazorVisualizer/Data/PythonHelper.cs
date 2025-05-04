@@ -10,8 +10,6 @@ namespace SeabornBlazorVisualizer.Data
     public static class PythonHelper
     {
 
-        private static bool runtime_initialized = false;
-
         /// <summary>
         /// Imports Python modules. Returned are the following modules:
         /// <para>np (numpy)</para>
@@ -34,23 +32,6 @@ namespace SeabornBlazorVisualizer.Data
 
             return (np, os, scipy, mpl, plt);
         }
-
-        private static void AddSitePackagesToPythonPath(IOptions<PythonConfig> pythonConfig)
-        {
-            if (!runtime_initialized)
-            {
-                using (Py.GIL())
-                {
-                    dynamic sys = Py.Import("sys");
-                    sys.path.append(pythonConfig.Value.PythonSitePackages);
-                    Console.WriteLine(sys.path);
-
-                    //add folders in solution this too with scripts
-                    sys.path.append(@"Data/");
-                }
-            }
-        }
-
 
     }
 }
