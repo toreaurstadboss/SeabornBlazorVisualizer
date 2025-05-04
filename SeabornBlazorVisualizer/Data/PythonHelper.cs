@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Python.Runtime;
+﻿using Python.Runtime;
 
 namespace SeabornBlazorVisualizer.Data
 {

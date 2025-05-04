@@ -1,12 +1,5 @@
-using IronPython.Runtime;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Options;
-using Microsoft.Scripting.Hosting;
 using Python.Runtime;
-using System.Drawing;
-using System.IO.Pipelines;
-using static IronPython.Modules._ast;
 
 namespace SeabornBlazorVisualizer.Data
 {
@@ -23,8 +16,9 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
-        public Task<string> GenerateDefiniteIntegral(string functionExpression, int lowerBound, int upperBound) { 
-        
+        public Task<string> GenerateDefiniteIntegral(string functionExpression, int lowerBound, int upperBound)
+        {
+
             string? result = null;
 
             using (Py.GIL()) // Ensure thread safety for Python calls
@@ -43,7 +37,7 @@ import numpy as np
 def func(x):
     return {functionExpression}
 ");
-                 
+
                     // Retrieve function reference from scope
                     dynamic func = scope.Get("func");
 
@@ -158,23 +152,23 @@ def func(x):
                 //Add legend with average and standard deviation
                 ax1.legend(new string[] { $"Total count: {total_count}\n Average: {average_formatted} cm\nStd Dev: {std_dev_formatted} cm" }, framealpha: 0.5, fancybox: true);
 
-               
+
 
                 //***** AX2 : Set up ax2 = Percentage histogram next *******
-                
+
                 ax2.set_title("Percentage distribution");
                 ax2.set_xlabel(xlabel);
                 ax2.set_ylabel(ylabel);
                 // Fix for CS1977: Cast the lambda expression to a delegate type
                 ax2.yaxis.set_major_formatter((PyObject)plt.FuncFormatter(new Func<double, int, string>((y, _) => $"{y:P0}")));
-               
+
                 ax2.hist(distribution, edgecolor: "black", weights: np.ones(distribution.size) / distribution.size);
 
                 // Format y-axis to show percentages
                 ax2.yaxis.set_major_formatter(plt.FuncFormatter(new Func<double, int, string>((y, _) => $"{y:P0}")));
 
                 // tight layout to prevent overlap 
-                plt.tight_layout(); 
+                plt.tight_layout();
 
                 // Show the plot with the two subplots at last (render to back buffer 'Agg', see method SavePlot for details)
                 plt.show();
@@ -214,7 +208,7 @@ def func(x):
 
         public Task<string> GenerateRandomizedCumulativeGraph()
         {
-            string? result = null;          
+            string? result = null;
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
 
@@ -273,20 +267,20 @@ def func(x):
             string? plotSavedImagePath = null;
             //using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             //{
-                dynamic os = Py.Import("os");
-                dynamic mpl = Py.Import("matplotlib");
-                // Set dark theme
-                plt.style.use(theme);
-                mpl.use("Agg"); //set up rendering of plot to back-buffer ('headless' mode)
-             
-                string cwd = os.getcwd();
-                // Save plot to PNG file
-                string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
-                string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
-                plt.savefig(imageToCreateWithFolderPath, dpi: dpi); //save the plot to a file (use full path)
-                plotSavedImagePath = imageToCreatePath;
+            dynamic os = Py.Import("os");
+            dynamic mpl = Py.Import("matplotlib");
+            // Set dark theme
+            plt.style.use(theme);
+            mpl.use("Agg"); //set up rendering of plot to back-buffer ('headless' mode)
 
-                CleanupOldGeneratedImages(cwd);
+            string cwd = os.getcwd();
+            // Save plot to PNG file
+            string imageToCreatePath = $@"GeneratedImages\{DateTime.Now.ToString("yyyyMMddHHmmss")}{Guid.NewGuid().ToString("N")}_plotimg.png";
+            string imageToCreateWithFolderPath = $@"{cwd}\wwwroot\{imageToCreatePath}";
+            plt.savefig(imageToCreateWithFolderPath, dpi: dpi); //save the plot to a file (use full path)
+            plotSavedImagePath = imageToCreatePath;
+
+            CleanupOldGeneratedImages(cwd);
             //}
             return plotSavedImagePath;
         }

@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using SeabornBlazorVisualizer.Data;
 
 namespace SeabornBlazorVisualizer
@@ -15,7 +13,7 @@ namespace SeabornBlazorVisualizer
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<MatplotPlotImageService>();
 
-            builder.Services.Configure<PythonConfig>(builder.Configuration.GetSection(nameof(PythonConfig))); 
+            builder.Services.Configure<PythonConfig>(builder.Configuration.GetSection(nameof(PythonConfig)));
 
             var app = builder.Build();
 
