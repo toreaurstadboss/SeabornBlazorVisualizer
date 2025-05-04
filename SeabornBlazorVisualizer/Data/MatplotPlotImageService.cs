@@ -51,7 +51,7 @@ def func(x):
                     double a = lowerBound, b = upperBound;
 
                     // Generate x-values
-                    dynamic x = np.linspace(0, 10, 100); //generate evenly spaced values in range [0, 10], 100 values (per 0.1)
+                    dynamic x = np.linspace(0, 10, 100); //generate evenly spaced values in range [0, 20], 100 values (per 0.1)
                     dynamic y = func.Invoke(x);
 
                     // Create plot figure
