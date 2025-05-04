@@ -23,8 +23,8 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
-        public Task<string> GenerateDefiniteIntegral()
-        {
+        public Task<string> GenerateDefiniteIntegral(string functionExpression) { 
+        
             string? result = null;
 
             using (Py.GIL()) // Ensure thread safety for Python calls
@@ -38,12 +38,12 @@ namespace SeabornBlazorVisualizer.Data
                 using (var scope = Py.CreateScope())
                 {
                     // Define the function inside the scope
-                    scope.Exec(@"
+                    scope.Exec($@"
 import numpy as np
 def func(x):
-    return (x - 3) * (x - 5) * (x - 12) + 85
+    return {functionExpression}
 ");
-
+                 
                     // Retrieve function reference from scope
                     dynamic func = scope.Get("func");
 
@@ -51,12 +51,16 @@ def func(x):
                     double a = 2, b = 9;
 
                     // Generate x-values
-                    dynamic x = np.linspace(0, 10, 100);
+                    dynamic x = np.linspace(0, 10, 100); //generate evenly spaced values in range [0, 10], 100 values (per 0.1)
                     dynamic y = func.Invoke(x);
 
                     // Create plot figure
                     var fig = plt.figure();
                     var ax = fig.add_subplot(111);
+
+                    // set title to function expression
+                    plt.title(functionExpression);
+
                     ax.plot(x, y, "r", linewidth: 2);
                     ax.set_ylim(0, null);
 
@@ -89,10 +93,11 @@ def func(x):
                     double area = np.trapezoid(iy, ix);
                     ax.text(0.5 * (a + b), 30, "$\\int_a^b f(x)\\mathrm{d}x$", ha: "center", fontsize: 20);
                     ax.text(0.5 * (a + b), 10, $"Area = {area:F2}", ha: "center", fontsize: 12);
+
                     plt.show();
 
 
-                    result = SavePlot(plt, dpi: 180);
+                    result = SavePlot(plt, dpi: 150);
                 }
             }
             return Task.FromResult(result);
