@@ -16,14 +16,28 @@
         <p>
             This demo shows a Definite integral. It shows both a graph showing a polynomial and also the calculated area of the definite integral between limits a and b.
             <br />
+            Some examples of plots to use listed below, use np (NumPy) for trigonometric functions
+            <ul>
+                <li>np.sin(x)+10</li>
+                <li>x*x</li>
+                <li>(x - 3) * (x - 5) * (x - 12) + 85</li>
+            </ul>
         </p>
 
     </div>
 </div>
 
-<div class="col-md-5 d-flex align-items-center">
-    <label id="lblFunction" class="col-form-label me-2" for="tbFunction">Function expression</label>
-    <InputTextArea class="form-control" name="tbFunction" @bind-Value="@FunctionToPlot" />
+<div class="col-md-4 d-flex align-items-center">
+    <label id="lblFunction" class="col-form-label me-3 fw-bold" for="tbFunction">Function expression</label>
+    <InputText class="form-control" name="tbFunction" @bind-Value="@FunctionToPlot" @onkeyup="HandleKeyPress" />
+</div>
+
+<div class="col-md-2 d-flex align-items-center">
+    <label id="lblStartValue" class="col-form-label me-3 fw-bold" for="tbStartValue">Start value</label>
+    <InputNumber class="form-control col-md-2" name="tbStartValue" @bind-Value="@Lowerbound" @onkeyup="HandleKeyPress" />
+
+    <label id="lblEndValue" class="col-form-label me-3 fw-bold" for="tbEndValue">End value</label>
+    <InputNumber class="form-control col-sm-2" name="tbEndValue" @bind-Value="@Upperbound" @onkeyup="HandleKeyPress" />
 </div>
 
 <div class="row">
@@ -45,9 +59,21 @@
 
     private string FunctionToPlot = "(x - 3) * (x - 5) * (x - 12) + 85";
 
+    private int Lowerbound = 2;
+
+    private int Upperbound = 8;
+
     protected override async Task OnParametersSetAsync()
     {
         await DrawIntegrationPlot();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await DrawIntegrationPlot();
+        }
     }
 
     private async Task DrawIntegrationPlot()
@@ -71,7 +97,7 @@
             {
                 isLoadingMatPlotImage = true;
 
-                generatedMatPlotImage = await MatplotPlotImageService.GenerateDefiniteIntegral(FunctionToPlot);
+                generatedMatPlotImage = await MatplotPlotImageService.GenerateDefiniteIntegral(FunctionToPlot, Lowerbound, Upperbound);
             }
             isLoadingMatPlotImage = false;
         }

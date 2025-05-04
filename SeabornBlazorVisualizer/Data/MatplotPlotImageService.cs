@@ -23,7 +23,7 @@ namespace SeabornBlazorVisualizer.Data
             PythonInitializer.InitializePythonRuntime(_pythonConfig);
         }
 
-        public Task<string> GenerateDefiniteIntegral(string functionExpression) { 
+        public Task<string> GenerateDefiniteIntegral(string functionExpression, int lowerBound, int upperBound) { 
         
             string? result = null;
 
@@ -48,7 +48,7 @@ def func(x):
                     dynamic func = scope.Get("func");
 
                     // Define integration limits
-                    double a = 2, b = 9;
+                    double a = lowerBound, b = upperBound;
 
                     // Generate x-values
                     dynamic x = np.linspace(0, 10, 100); //generate evenly spaced values in range [0, 10], 100 values (per 0.1)
