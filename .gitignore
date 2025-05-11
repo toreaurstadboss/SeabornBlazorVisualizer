@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# Generated plot images
+ SeabornBlazorVisualizer/wwwroot/GeneratedImages
