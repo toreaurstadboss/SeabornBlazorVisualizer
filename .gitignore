@@ -485,4 +485,4 @@ $RECYCLE.BIN/
 
 
 # Generated plot images
- SeabornBlazorVisualizer/wwwroot/GeneratedImages
+ SeabornBlazorVisualizer/wwwroot/GeneratedImages/*.png
