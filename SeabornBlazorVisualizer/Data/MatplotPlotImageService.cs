@@ -97,6 +97,36 @@ def func(x):
             return Task.FromResult(result);
         }
 
+        public Task<string> GenerateSeabornHistogram()
+        {
+            string? result = null;
+            using (Py.GIL()) //Python Global Interpreter Lock (GIL)
+            {
+                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
+
+                dynamic sns = Py.Import("seaborn");
+   
+                string cwd = os.getcwd();
+
+                plt.clf();
+
+                var penguins = sns.load_dataset("penguins");
+
+                sns.histplot(data: penguins, x: "flipper_length_mm");
+
+                // tight layout to prevent overlap 
+                plt.tight_layout();
+
+                // Show the plot with the two subplots at last (render to back buffer 'Agg', see method SavePlot for details)
+                plt.show();
+
+                result = SavePlot(plt, theme: "bmh", dpi: 150);
+            }
+
+            return Task.FromResult(result);
+        }
+
+
         public Task<string> GenerateHistogram(List<double> values, string title = "Provide Plot title", string xlabel = "Provide xlabel title", string ylabel = "Provide ylabel title")
         {
             string? result = null;
