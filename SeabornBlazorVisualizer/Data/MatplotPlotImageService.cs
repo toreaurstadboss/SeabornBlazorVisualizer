@@ -1,3 +1,4 @@
+using MathNet.Numerics.Statistics;
 using Microsoft.Extensions.Options;
 using Python.Runtime;
 
@@ -112,7 +113,9 @@ def func(x):
 
                 var penguins = sns.load_dataset("penguins");
 
-                sns.histplot(data: penguins, x: "flipper_length_mm");
+                //sns.set_style("darkgrid");
+
+                sns.histplot(data: penguins, x: "flipper_length_mm", kde: true);
 
                 // tight layout to prevent overlap 
                 plt.tight_layout();
