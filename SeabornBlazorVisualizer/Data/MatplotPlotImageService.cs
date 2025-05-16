@@ -85,7 +85,7 @@ def func(x):
                     ax.add_patch(poly);
 
                     // Compute integral area
-                    double area = np.trapezoid(iy, ix);
+                    double area = np.trapz(iy, ix);
                     ax.text(0.5 * (a + b), 30, "$\\int_a^b f(x)\\mathrm{d}x$", ha: "center", fontsize: 20);
                     ax.text(0.5 * (a + b), 10, $"Area = {area:F2}", ha: "center", fontsize: 12);
 
@@ -103,9 +103,7 @@ def func(x):
             string? result = null;
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
-
-                dynamic sns = Py.Import("seaborn");
+                var (np, os, scipy, mpl, plt, sns) = PythonHelper.ImportPythonModules();
    
                 string cwd = os.getcwd();
 
@@ -135,7 +133,7 @@ def func(x):
             string? result = null;
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
+                var (np, os, scipy, mpl, plt, sns) = PythonHelper.ImportPythonModules();
 
                 var distribution = np.array(values.ToArray());
 
@@ -217,7 +215,7 @@ def func(x):
             string? result = null;
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
-                var (np, os, scipy, mpl, plt) = PythonHelper.ImportPythonModules();
+                var (np, os, scipy, mpl, plt, sns) = PythonHelper.ImportPythonModules();
 
                 dynamic pythonValues = np.cumsum(np.array(values.ToArray()));
 
@@ -245,30 +243,12 @@ def func(x):
             using (Py.GIL()) //Python Global Interpreter Lock (GIL)
             {
 
-                dynamic np = Py.Import("numpy");
-
-                //TODO : Remove imports of pandas and scipy and datetime if they are not needed
-
-                Py.Import("pandas");
-                Py.Import("scipy");
-                Py.Import("datetime");
-                dynamic os = Py.Import("os");
-
-                dynamic mpl = Py.Import("matplotlib");
-                dynamic plt = Py.Import("matplotlib.pyplot");
-
+                var (np, os, scipy, mpl, plt, sns) = PythonHelper.ImportPythonModules();
+               
                 // Set dark theme
                 plt.style.use("ggplot");
-
-                mpl.use("Agg");
-
-
-                // Generate data
-                //dynamic x = np.arange(0, 10, 0.1);
-                //dynamic y = np.multiply(2, x); // Use NumPy's multiply function
-
+       
                 dynamic values = np.cumsum(np.random.randn(1000, 1));
-
 
                 // Ensure clearing the plot
                 plt.clf();

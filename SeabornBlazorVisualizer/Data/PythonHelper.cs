@@ -18,7 +18,7 @@ namespace SeabornBlazorVisualizer.Data
         /// <para>plt (matplotlib.pyplot </para>
         /// </summary>
         /// <returns>Tuple of Python modules</returns>
-        public static (dynamic np, dynamic os, dynamic scipy, dynamic mpl, dynamic plt) ImportPythonModules()
+        public static (dynamic np, dynamic os, dynamic scipy, dynamic mpl, dynamic plt, dynamic sns) ImportPythonModules()
         {
 
             dynamic np = Py.Import("numpy");
@@ -27,9 +27,11 @@ namespace SeabornBlazorVisualizer.Data
             dynamic plt = Py.Import("matplotlib.pyplot");
             dynamic scipy = Py.Import("scipy");
 
+            dynamic sns = Py.Import("seaborn");
+
             mpl.use("Agg");
 
-            return (np, os, scipy, mpl, plt);
+            return (np, os, scipy, mpl, plt, sns);
         }
 
     }
